@@ -153,111 +153,6 @@ ELECTRICITY_SENSORS = [
   }
 ]
 
-GAS_SENSORS = [
-  {
-    "name": "Smart Meter Gas: Import",
-    "device_class": SensorDeviceClass.ENERGY,
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR,
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['cumulative'],
-    "ignore_zero_values": True,
-  },
-  {
-    "name": "Smart Meter Gas: Import Vol",
-    "device_class": SensorDeviceClass.GAS,
-    "unit_of_measurement": VOLUME_CUBIC_METERS,
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['cumulativevol'],
-    "ignore_zero_values": True,
-  },
-  {
-    "name": "Smart Meter Gas: Import Vol (Today)",
-    "device_class": SensorDeviceClass.ENERGY, # Change this to GAS if cubic meters is used
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR, # Might change to VOLUME_CUBIC_METERS soon
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['dayvol']
-  },
-  {
-    "name": "Smart Meter Gas: Import Vol (This week)",
-    "device_class": SensorDeviceClass.ENERGY, # Change this to GAS if cubic meters is used
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR, # Might change to VOLUME_CUBIC_METERS soon
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['weekvol']
-  },
-  {
-    "name": "Smart Meter Gas: Import Vol (This month)",
-    "device_class": SensorDeviceClass.ENERGY, # Change this to GAS if cubic meters is used
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR, # Might change to VOLUME_CUBIC_METERS soon
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['monthvol']
-  },
-  {
-    "name": "Smart Meter Gas: Import (Today)",
-    "device_class": SensorDeviceClass.ENERGY,
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR,
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['day']
-  },
-  {
-    "name": "Smart Meter Gas: Import (This week)",
-    "device_class": SensorDeviceClass.ENERGY,
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR, 
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['week']
-  },
-  {
-    "name": "Smart Meter Gas: Import (This month)",
-    "device_class": SensorDeviceClass.ENERGY,
-    "unit_of_measurement": ENERGY_KILO_WATT_HOUR,
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:fire",
-    "func": lambda js : js['gasmeter']['energy']['import']['month']
-  },
-  {
-    "name": "Smart Meter Gas: Import Unit Rate",
-    "device_class": SensorDeviceClass.MONETARY,
-    "unit_of_measurement": "GBP/kWh",
-    "state_class": SensorStateClass.MEASUREMENT,
-    "icon": "mdi:cash",
-    "func": lambda js : js['gasmeter']['energy']['import']['price']['unitrate'],
-    "ignore_zero_values": True,
-  },
-  {
-    "name": "Smart Meter Gas: Import Standing Charge",
-    "device_class": SensorDeviceClass.MONETARY,
-    "unit_of_measurement": "GBP",
-    "state_class": SensorStateClass.MEASUREMENT,
-    "icon": "mdi:cash",
-    "func": lambda js : js['gasmeter']['energy']['import']['price']['standingcharge'],
-    "ignore_zero_values": True,
-  },
-  # Removed June 2022 in IHD software update 1.8.13
-  # {
-  #   "name": "Smart Meter Gas: Power",
-  #   "device_class": SensorDeviceClass.POWER,
-  #   "unit_of_measurement": POWER_KILO_WATT,
-  #   "state_class": SensorStateClass.MEASUREMENT,
-  #   "icon": "mdi:fire",
-  #   "func": lambda js : js['gasmeter']['power']['value'],
-  # },
-  {
-    "name": "Smart Meter Gas: Cost (Today)",
-    "device_class": SensorDeviceClass.MONETARY,
-    "unit_of_measurement": "GBP",
-    "state_class": SensorStateClass.TOTAL_INCREASING,
-    "icon": "mdi:cash",
-    "func": lambda js : round(js['gasmeter']['energy']['import']['price']['standingcharge'] + \
-       (js['gasmeter']['energy']['import']['day'] * js['gasmeter']['energy']['import']['price']['unitrate']), 2),
-  }
-]
-
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Smart Meter sensors."""
@@ -294,8 +189,7 @@ async def async_get_device_groups(deviceUpdateGroups, async_add_entities, device
         _LOGGER.debug("New device found: %s", device_id)
         groups = [
             HildebrandGlowMqttSensorUpdateGroup(device_id, "STATE", STATE_SENSORS),
-            HildebrandGlowMqttSensorUpdateGroup(device_id, "electricitymeter", ELECTRICITY_SENSORS),
-            HildebrandGlowMqttSensorUpdateGroup(device_id, "gasmeter", GAS_SENSORS)
+            HildebrandGlowMqttSensorUpdateGroup(device_id, "electricitymeter", ELECTRICITY_SENSORS)
         ]
         async_add_entities(
             [sensorEntity for updateGroup in groups for sensorEntity in updateGroup.all_sensors],
