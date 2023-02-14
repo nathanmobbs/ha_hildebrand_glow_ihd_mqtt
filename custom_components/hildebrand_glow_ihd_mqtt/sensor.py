@@ -140,7 +140,7 @@ ELECTRICITY_SENSORS = [
     "unit_of_measurement": POWER_WATT,
     "state_class": SensorStateClass.MEASUREMENT,
     "icon": "mdi:flash",
-    "func": lambda js : js['electricitymeter']['power']['value'] * 1000,
+    "func": lambda js : round(js['electricitymeter']['power']['value'] * 1000)
   },
   {
     "name": "Smart Meter Electricity: Cost (Today)",
